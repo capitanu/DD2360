@@ -1,0 +1,274 @@
+\documentclass[english]{exam}
+
+\setlength {\marginparwidth }{2cm} 
+\usepackage{todonotes}
+
+\usepackage[perpage,para,symbol]{footmisc}
+
+\hyphenpenalty=15000 
+\tolerance=1000
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning,calc,shapes}
+\usepackage{pgfmath}
+\usepackage{rotating}
+\usepackage{array}	
+\usepackage{graphicx}
+\usepackage{float}	
+\usepackage{mdwlist}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{bytefield}
+\usepackage{tabularx}
+\usepackage{multirow}	       
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\captionsetup[table]{skip=10pt}
+
+\usepackage{url}               
+\usepackage{hyperref}
+\usepackage[all]{hypcap}	
+\usepackage{titlesec}
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\PassOptionsToPackage{USenglish,english}{babel} 
+\usepackage{csquotes}
+\usepackage{tabto}
+\usepackage[USenglish,english]{babel}
+\usepackage[acronym, section=section, nonumberlist, nomain, nopostdot]{glossaries}
+\makeglossaries
+ 
+\makeglossaries
+\newcommand{\colorbitbox}[3]{%
+	\rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}%
+	\bitbox{#2}{#3}}
+
+\begin{document}
+
+\title{Assignment II:\\ CUDA Basics}
+\author{Amirhossein Namazi, Calin Capitanu}
+
+\maketitle
+
+
+\chapter{Exercise 1}
+\section*{Hello World!}
+
+The program is compiled using the compiler for CUDA programs, \textbf{nvcc}. Since the GPU that the code is ran on has the Ampere architecture (30 series Nvidia), the \textbf{-arch=sm\_80} flag is given. Finally, the source code and an output binary name are given, all resulting in this command: \\
+\begin{lstlisting}
+nvcc -arch=sm_80 exercise_1.cu -o exercise_1}
+\end{lstlisting}
+
+\noindent
+
+CUDA programs take advantage of the parallel processing of the GPU using CUDA Threads. These threads are independent execution threads that execute one specific action (one function, or ``kernel'' in the CUDA Jargon). These CUDA threads are grouped into CUDA thread blocks. Each thread block has the same number of threads, defined at the beginning of launching a kernel. When talking about memory management, blocks of CUDA threads can share one type of memory, while single threads also have their own memory (registers). Obviously, each thread in the thread block executes the same kernel (or function).\\\\\\
+
+\clearpage
+\chapter{Exercise 2}
+\section*{Performing SAXPY on the GPU}
+
+The problem of the number of blocks when \textbf{ARRAY\_SIZE} is not a multiple of the number of threads per block is easily fixable with the following formula for the number of blocks:\\\\
+$BLOCKS = (ARRAY\_SIZE + TPB - 1) / TPB$
+\\\\
+This makes sure that all of the computations will have one thread to execute on, even if \\ \textit{ARRAY\_SIZE \% TPB != 0}.
+\\\\
+\noindent
+The first time analysis we did was using the cpu time seconds retrieved from the system function \textit{gettimeofday()}. Results were surprizing for this, by varying from 10,000 items in an array, all the way to 1,000,000,000. All of the runs, the CPU time was better than the one of the GPU. There are two explanations that we found possible from this:
+
+\begin{enumerate}
+\item A lot of the time is consumed on the transfer of data from the CPU to the GPU through the PCIe lanes, which are way smaller compared to the ones internal to the CPU, or internal in the GPU.
+\item The second reason, which might be specific to the machine this has been run on, is the fact that the CPU has 32 execution threads at a really efficient IPC, which leads to really good times, and in the case \textit{nvcc} is able to optimize things on the CPU to be ran in parallel (which I highly doubt), it could yield interesting results on it as well.
+\end{enumerate}
+
+\noindent
+Some of the results when running with varying sizes of the \textit{ARRAY\_SIZE}:\\
+
+\begin{lstlisting}
+Computing SAXPY on the CPU...Done! Took: 0.000122 seconds
+Computing SAXPY on the GPU...Done! Took: 0.000221 seconds
+Comparing the output for each implementation...Correct
+\end{lstlisting}
+
+\begin{lstlisting}
+Computing SAXPY on the CPU...Done! Took: 0.011765 seconds
+Computing SAXPY on the GPU...Done! Took: 0.012260 seconds
+Comparing the output for each implementation...Correct
+\end{lstlisting}
+
+\begin{lstlisting}
+Computing SAXPY on the CPU...Done! Took: 0.123760 seconds
+Computing SAXPY on the GPU...Done! Took: 0.125628 seconds
+Comparing the output for each implementation...Correct
+\end{lstlisting}
+
+\begin{lstlisting}
+Computing SAXPY on the CPU...Done! Took: 1.213933 seconds
+Computing SAXPY on the GPU...Done! Took: 1.233103 seconds
+Comparing the output for each implementation...Correct
+\end{lstlisting}
+
+\noindent
+Unfortunately, running \textit{nvprof} did not work as expected, since we received the following error:\\
+
+\begin{lstlisting}[style=CStyle]
+======== Warning: nvprof is not supported on devices with compute capability 8.0 and higher.
+                  Use NVIDIA Nsight Systems for GPU tracing and CPU sampling and NVIDIA Nsight Compute for GPU profiling.
+                  Refer https://developer.nvidia.com/tools-overview for more details.
+\end{lstlisting}
+
+\clearpage 
+\chapter{Exercise 3}
+\section*{CUDA simulation and GPU Profiling}
+
+\clearpage 
+\chapter{Bonus Exercise}
+\section*{Calculating PI with CUDA}
+
+\clearpage 
+\chapter{Appendix}
+\section*{Exercise 1 Code}
+
+\begin{lstlisting}[style=CStyle]
+#include <stdio.h>
+#define TPB 256
+
+
+__global__ void helloWorldKernel(){
+	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	printf("Hello World! My threadId: %d\n", idx);
+}
+
+int main(){
+
+	helloWorldKernel<<<1, TPB>>>();
+	cudaDeviceSynchronize();
+	return 0;
+}
+
+\end{lstlisting}
+
+\section*{Exercise 2 Code}
+
+\begin{lstlisting}[style=CStyle]
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
+
+#define TPB 256
+
+#define CPU true
+#define GPU true
+#define ARRAY_SIZE 10000
+
+#define EPSILON 0.001
+
+double cpuSecond() {
+   struct timeval tp;
+   gettimeofday(&tp,NULL);
+   return ((double)tp.tv_sec + (double)tp.tv_usec*1.e-6);
+}
+
+__global__ void SAXPY_GPU(float *d_x, float *d_y, const float a){
+	const int idx = threadIdx.x + blockDim.x * blockIdx.x;
+	d_y[idx] = d_x[idx] * a + d_y[idx];
+}
+
+void SAXPY_CPU(float *x, float *y, const float a){
+	for(int i = 0; i < ARRAY_SIZE; i++){
+		y[i] = a*x[i] + y[i];
+	}
+}
+
+int main(){
+
+	float *x, *y, *y_gpu;
+	x = (float *) malloc(sizeof(float) * ARRAY_SIZE);
+	y = (float *) malloc(sizeof(float) * ARRAY_SIZE);
+	y_gpu = (float *) malloc(sizeof(float) * ARRAY_SIZE);
+
+	for(int i = 0; i < ARRAY_SIZE; i++){
+		x[i] = rand() % 100;
+		y[i] = rand() % 100;
+	}
+	float a = 3.45;
+	
+	float *d_x, *d_y;
+	cudaMalloc(&d_x, sizeof(float) * ARRAY_SIZE);
+	cudaMalloc(&d_y, sizeof(float) * ARRAY_SIZE);
+	
+	cudaMemcpy(d_x, x, sizeof(float) * ARRAY_SIZE, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_y, y, sizeof(float) * ARRAY_SIZE, cudaMemcpyHostToDevice);
+
+	printf("Computing SAXPY on the CPU...");
+	double start_cpu = cpuSecond();
+	SAXPY_CPU(x,y,a);
+	printf("Done! Took: %f seconds\n", cpuSecond() - start_cpu);
+
+	printf("Computing SAXPY on the GPU...");
+	double start_gpu = cpuSecond();
+	SAXPY_GPU<<<(ARRAY_SIZE + TPB - 1)/TPB, TPB>>>(d_x, d_y, a);
+	cudaDeviceSynchronize();
+	printf("Done! Took: %f seconds\n", cpuSecond() - start_cpu);
+	
+	cudaMemcpy(y_gpu, d_y, sizeof(float) * ARRAY_SIZE, cudaMemcpyDeviceToHost);
+
+	bool comp = true;
+	for(int i = 0; i < ARRAY_SIZE; i++){
+		if(abs(y[i] - y_gpu[i]) > EPSILON){
+			comp = false;
+			printf("%f\n", abs(y[i] - y_gpu[i]));
+		}
+	}
+	
+	printf("Comparing the output for each implementation...");
+	if(comp)
+		printf("Correct\n");
+	else
+		printf("Incorrect\n");
+	
+	
+
+	return 0;
+}
+
+\end{lstlisting}
+
+\bibliographystyle{myIEEEtran}
+\renewcommand{\bibname}{References}
+\addcontentsline{toc}{chapter}{References}
+\bibliography{references}
+
+\end{document}
