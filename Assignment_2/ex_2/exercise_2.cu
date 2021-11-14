@@ -4,8 +4,6 @@
 
 #define TPB 256
 
-#define CPU true
-#define GPU true
 #define ARRAY_SIZE 1000000000
 
 #define EPSILON 0.001
@@ -67,6 +65,13 @@ int main(){
 			printf("%f\n", abs(y[i] - y_gpu[i]));
 		}
 	}
+
+	cudaFree(d_x);
+	cudaFree(d_y);
+	
+	free(y);
+	free(x);
+	free(y_gpu);
 	
 	printf("Comparing the output for each implementation...");
 	if(comp)
