@@ -1,0 +1,110 @@
+\documentclass[english]{exam}
+
+\setlength {\marginparwidth }{2cm} 
+\usepackage{todonotes}
+
+\usepackage[perpage,para,symbol]{footmisc}
+
+\hyphenpenalty=15000 
+\tolerance=1000
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning,calc,shapes}
+\usepackage{pgfmath}
+\usepackage{rotating}
+\usepackage{array}	
+\usepackage{graphicx}
+\usepackage{float}	
+\usepackage{mdwlist}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{bytefield}
+\usepackage{tabularx}
+\usepackage{multirow}	       
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\captionsetup[table]{skip=10pt}
+
+\usepackage{url}               
+\usepackage{hyperref}
+\usepackage[all]{hypcap}	
+\usepackage{titlesec}
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{darkblue}{rgb}{0.1,0.1,0.5}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\PassOptionsToPackage{USenglish,english}{babel} 
+\usepackage{csquotes}
+\usepackage{tabto}
+\usepackage[USenglish,english]{babel}
+\usepackage[acronym, section=section, nonumberlist, nomain, nopostdot]{glossaries}
+\makeglossaries
+ 
+\makeglossaries
+\newcommand{\colorbitbox}[3]{%
+	\rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}%
+	\bitbox{#2}{#3}}
+
+\begin{document}
+
+\title{Assignment III:\\ Advanced CUDA}
+\author{Amirhossein Namazi, Calin Capitanu}
+
+\maketitle
+
+
+\chapter{Exercise 1}
+\section*{CUDA Edge Detector using shared memory}
+
+\clearpage
+\chapter{Exercise 2}
+\section*{Pinned and Managed Memory}
+
+\clearpage
+\chapter{Exercise 3}
+\section*{CUDA Streams/Asynchronous Copy - Particle Batching}
+
+\clearpage
+\chapter{Bonus Exercise}
+\section*{CUDA Libraries - cuBLAS}
+
+\bibliographystyle{myIEEEtran}
+\renewcommand{\bibname}{References}
+\addcontentsline{toc}{chapter}{References}
+\bibliography{references}
+
+\end{document}

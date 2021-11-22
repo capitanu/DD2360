@@ -1,0 +1,42 @@
+General Feedback:
+
+Exercise 1:
+
+Everything seems to be correct to me. The explanation of threads and thread blocks is right, however a bit too robust in a sense. It could be more detailed, and the introduction of the term SIMT is not needed in this case, it doesn't bring any new value.
+
+Exercise 2:
+
+1. The explanation is lacking. Only pasting the code that does the trick is not enough in my opinion. Maybe some explanation of why this works should be good.
+
+2. The explanation is reasonable, but there is a good lack of proof, including some example runs, tests and timings for those.
+
+Exercise 3:
+
+1 and 2. The results are nicely displayed in tables and I appreciate bolding the best solutions per number of particles.
+
+3. A nice graph has been included which is good. The reasoning and findings are good in my opinion.
+
+4. There is no proof of correctness for the statements here. I think there should be at least 1 graph included where this computations are displayed. At the same time, the output of `nvprof` should probably also be attached. In my case, even if the GPU times were higher than before, they were still below CPU times, so a graph would have been nice!
+
+Bonus exercise:
+
+1. I think that this assignment was asking for plots, and the table should not count the same. However, the results seem to be fine.
+
+2. A bit of analysis on the graphs and results would have been nice, at least a few words. Also, the table should include labels as per both axis for convenience.
+
+3. The results here are really interesting in my perspective. For a still unknown reason, my results for single precision were really really off! These seem to not be the same in your case and I like the display of both side-by-side results!
+
+A. Strenghts
+
+1. Good tables and quality data
+2. To the point, avoiding useless information and answering on point.
+
+B. Weaknesses
+
+1. Lacks a lot of the analysis part of the results.
+2. Some of the requirements of the tasks were not met.
+
+C. Correctness of the code
+
+Running the code works for all of the assignments, and besides that, I think that all of the code is actually correct.
+
