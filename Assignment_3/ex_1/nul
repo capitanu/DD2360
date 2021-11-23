@@ -1,0 +1,2 @@
+montage: length and filesize do not match `images/hw3_result_1.bmp' @ error/bmp.c/ReadBMPImage/845.
+montage: length and filesize do not match `images/hw3_result_3.bmp' @ error/bmp.c/ReadBMPImage/845.

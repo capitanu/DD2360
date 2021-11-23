@@ -1,4 +1,4 @@
-FILENAME := appgpu21_HW2_20
+FILENAME := appgpu21_HW3_20
 loop:
 	while inotifywait -e close_write $(FILENAME).tex ; do pdflatex $(FILENAME).tex; pdflatex $(FILENAME).tex; bibtex $(FILENAME); makeglossaries $(FILENAME); pdflatex $(FILENAME).tex; done	
 

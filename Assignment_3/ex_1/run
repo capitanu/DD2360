@@ -1,5 +1,8 @@
 #!/bin/sh
 
+nvcc -arch=sm_80 hw3_ex1.cu -o hw3_ex1.out && ./hw3_ex1.out images/hk.bmp &&
+nvcc -arch=sm_80 hw3_ex1.cu -o hw3_ex1.out && ./hw3_ex1.out images/nyc.bmp &&
+nvcc -arch=sm_80 hw3_ex1.cu -o hw3_ex1.out && ./hw3_ex1.out images/rome.bmp &&
 nvcc -arch=sm_80 hw3_ex1.cu -o hw3_ex1.out && ./hw3_ex1.out images/hw3.bmp &&
 montage -tile 2x1 -crop 320x180+512+512 -geometry 640x360 images/hw3_result_1.bmp images/hw3_result_2.bmp images/hw3_result_2_comp.jpg >nul 2>nul ||
 montage -border 0 -geometry 640x360 -tile 3x1 images/hw3.bmp images/hw3_result_1.bmp images/hw3_result_3.bmp images/hw3_result_3_comp.jpg >nul 2>nul
