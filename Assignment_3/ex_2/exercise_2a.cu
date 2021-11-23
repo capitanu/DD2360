@@ -59,7 +59,7 @@ int main(int argc, char* argv[]){
 	double3 rands;
 	
 	//cudaMallocHost(&d_particles, sizeof(Particle) * NUM_PARTICLES);
-	//cudaMalloc(&d_particles, sizeof(Particle) * NUM_PARTICLES);
+	cudaMalloc(&d_particles, sizeof(Particle) * NUM_PARTICLES);
 
 
 	double start_gpu = cpuSecond();

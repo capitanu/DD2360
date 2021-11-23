@@ -1,16 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-first = [13.879000, 25.234000, 8.386000]
-second = [13.466000, 24.023000, 8.612000]
-third = [14.918000, 27.380000, 9.684000]
+hk = [12.528000, 13.111000, 15.059000]
+nyc = [23.151000, 22.851000, 27.076000]
+rome = [8.533000, 8.765000, 9.524000]
 x = [1, 2, 3]
+x_ticks = ["B/W", "Gaussian", "Edges"]
 
 n_bins = 10
 
 photos = ['hk', 'nyc', 'rome']
-fig, ax0 = plt.subplots()
-ax0.hist(first, 3, density=True, histtype='bar', label=photos)
-ax0.legend(prop={'size': 10})
-ax0.set_title('Different images')
+plt.xticks(x, x_ticks)
+plt.plot(x, hk, label = "hk")
+plt.plot(x, nyc, label = "nyc")
+plt.plot(x, rome, label = "rome")
+plt.legend()
+plt.ylabel("Time (ms)")
+plt.savefig("plot1.png")
 plt.show()
