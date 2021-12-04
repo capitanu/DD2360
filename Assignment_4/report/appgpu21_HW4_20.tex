@@ -1,0 +1,119 @@
+\documentclass[english]{exam}
+
+\setlength {\marginparwidth }{2cm} 
+\usepackage{todonotes}
+
+\usepackage[perpage,para,symbol]{footmisc}
+
+\hyphenpenalty=15000 
+\tolerance=1000
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning,calc,shapes}
+\usepackage{pgfmath}
+\usepackage{rotating}
+\usepackage{array}	
+\usepackage{graphicx}
+\usepackage{float}	
+\usepackage{mdwlist}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{bytefield}
+\usepackage{tabularx}
+\usepackage{multirow}	       
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\captionsetup[table]{skip=10pt}
+
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage[all]{hypcap}	
+\usepackage{titlesec}
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{darkblue}{rgb}{0.1,0.1,0.5}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\NewDocumentCommand{\codeword}{v}{%
+  \texttt{
+  \colorbox{backgroundColour}{\textcolor{magenta}{#1}}}%
+}
+
+
+\PassOptionsToPackage{USenglish,english}{babel} 
+\usepackage{csquotes}
+\usepackage{tabto}
+\usepackage[USenglish,english]{babel}
+\usepackage[acronym, section=section, nonumberlist, nomain, nopostdot]{glossaries}
+\makeglossaries
+ 
+\makeglossaries
+\newcommand{\colorbitbox}[3]{%
+	\rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}%
+	\bitbox{#2}{#3}}
+
+
+\begin{document}
+
+\title{Assignment IV:\\ OpenCL and OpenACC}
+\author{Amirhossein Namazi, Calin Capitanu}
+
+\maketitle
+\begin{center}
+  \url{https://github.com/capitanu/DD2360} \\
+\end{center}
+
+\chapter{Exercise 1}
+\section*{Hello World!}
+
+The first part of the assignment was to extend the template to have a working OpenCL application. Initially, we had to run the actual OpenCL app within a string declared at the top of the C code. This part of the program is just suppossed to print ``Hello World'' together with the ID of the work item. The ID is retrieved with the command \codeword{get_global_id()}. \\
+Next up, we had to actually create the program from the string and build it, while also checking for possible errors. After we do this and also create the kernel, while specifying the number of work items and the workgroup size, we enqueue the kernel to be run and wait for it to be finished.
+\\\\
+In the first part of the assignment where we only had 1 dimension to the number of workitems, everything was straight-forward, however in the second part we had to create a 2 dimensional array and later a 3 dimensional array. The changes for these were only regarding the number of workitems and the workgroup size, such that these, instead of being integers, would be arrays of sizes and finally specyinf the size in the enqueue command as such:\\
+\codeword{clEnqueueNDRangeKernel(cmd_queue, kernel, 3, NULL, &n_workitem, &workgroup_size, 0, NULL, NULL);}\\\\
+Finally, after doing this for the 2D and then 3D arrays, we also had to figure out how to print the index of each workitem. In OpenCL this is made a lot easier by the availability of two different commands, depending on the point of reference of the index: either global or local, with the commands \codeword{get_global_id()} and \codeword{get_local_id()}. These two come together with the command \codeword{get_group_id()} in order to be able to also compute the global id from the local id and the group id. It is also pretty convinient that we can query the index on different axis.
+
+\clearpage
+\chapter{Exercise 2}
+\section*{Performing SAXPY using OpenCL}
+
+
+\bibliographystyle{myIEEEtran}
+\renewcommand{\bibname}{References}
+\addcontentsline{toc}{chapter}{References}
+\bibliography{references}
+
+\end{document}

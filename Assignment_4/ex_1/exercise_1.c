@@ -15,8 +15,10 @@ const char *mykernel =
 	"__kernel                   \n"
 	"void helloworld()          \n"
 	"{                          \n"
-	"int index = get_global_id(0); \n"
-	"printf(\"Hello World! My threadId is %d\\n\", index); \n"
+	"int indexX = get_global_id(0); \n"
+	"int indexY = get_global_id(1); \n"
+	"int indexZ = get_global_id(2); \n"
+	"printf(\"Hello World! My threadId is x = %d, y = %d, z = %d\\n\", indexX, indexY, indexZ); \n"
 	"}                          \n";
 
 
@@ -54,10 +56,10 @@ int main(int argc, char *argv) {
 
   cl_kernel kernel = clCreateKernel(program, "helloworld", &err);
 
-  size_t n_workitem = 256;
-  size_t workgroup_size = 1;
+  size_t n_workitem[] = {16, 16, 16};
+  size_t workgroup_size[] = {4, 4, 4};
 
-  err = clEnqueueNDRangeKernel(cmd_queue, kernel, 1, NULL, &n_workitem, &workgroup_size, 0, NULL, NULL);CHK_ERROR(err);
+  err = clEnqueueNDRangeKernel(cmd_queue, kernel, 3, NULL, &n_workitem, &workgroup_size, 0, NULL, NULL);CHK_ERROR(err);
   err = clFinish(cmd_queue);CHK_ERROR(err);
 
   // Finally, release all that we have allocated.
