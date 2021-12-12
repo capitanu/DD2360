@@ -17,13 +17,15 @@ static void HandleError( cudaError_t err,
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
 
-#define TPB 2
 
+#define EPSILON 0.01
+
+#define TPB 32
 #define WIDTH 1600
 #define HEIGHT 1600
 
 double POSITION[] = {0.0, 0.0, 1.0};
-#define RADIUS 1.0
+#define RADIUS 1.5
 const double COLOR[] = {0.0, 0.0, 1.0};
 #define DIFFUSE 1
 #define SPECULAR_C 1.0
@@ -303,13 +305,11 @@ __global__ void run_gpu(char *image){
 
 	gpu_normalize(D);
 	
-	double *col = (double *) malloc(3 * sizeof(double));
+	double col[3];
 	
 	gpu_trace_ray(col, D);
 
 	if(col[0] == -1){
-		free(col);
-		free(D);
 		return;
 	}
 
@@ -317,8 +317,6 @@ __global__ void run_gpu(char *image){
 	image[index * 3 + 1] = max(0.0, min(col[1], 1.0)) * 255;
 	image[index * 3] = max(0.0, min(col[2], 1.0)) * 255;
 
-	free(col);
-	free(D);
 	
 }
 
@@ -353,6 +351,18 @@ int main(int argc, char **argv)
 	
 	writeBMP(WIDTH, HEIGHT, gpu_image, 2);
 
+	int val = 0;
+	for(int i = 0; i < 3 * WIDTH* HEIGHT; i++){
+		if(abs(gpu_image[i] - cpu_image[i]) > EPSILON){
+			val = 1;
+		}
+	}
+	if(val == 1){
+		printf("There are differences in the output images.\n");
+	}
+	else {
+		printf("The results are correct.\n");
+	}
 	cudaFree(d_image);
 	free(gpu_image);
 	free(cpu_image);
