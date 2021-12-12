@@ -2,7 +2,7 @@ This is BibTeX, Version 0.99d (TeX Live 2021/Arch Linux)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: appgpu21_HW4_20.aux
 I couldn't open style file myIEEEtran.bst
----line 31 of file appgpu21_HW4_20.aux
+---line 34 of file appgpu21_HW4_20.aux
  : \bibstyle{myIEEEtran
  :                     }
 I'm skipping whatever remains of this command

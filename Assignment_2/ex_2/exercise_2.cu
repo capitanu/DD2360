@@ -4,7 +4,7 @@
 
 #define TPB 256
 
-#define ARRAY_SIZE 1000000000
+#define ARRAY_SIZE 10000000
 
 #define EPSILON 0.001
 

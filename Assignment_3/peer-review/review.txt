@@ -1,0 +1,16 @@
+A. Strenghts
+
+1. I'd 
+2. To the point, avoiding useless information and answering on point.
+
+B. Weaknesses
+
+I'd like to say that there are barely any weaknesses in this report. I think it is very well written with detailed and well described solutions.
+However, since I have to find 2 weaknesses, here they are:
+1. The lack of images, graphs and outputs of nvprof should have been added
+2. I know this is a nit-pick, but I would say that formatting could have been done better, regarding image references maybe, and refering to functions with a different color or something like bold.
+
+C. Correctness of the code
+
+Running the code works for all of the assignments, and besides that, I think that all of the code is actually correct.
+

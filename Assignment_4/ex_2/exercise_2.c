@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <CL/cl.h>
+#include <sys/time.h>
 
-#define size 1000
+#define size 10000000
+#define EPSILON 0.001
 
 // This is a macro for checking the error variable.
 #define CHK_ERROR(err) if (err != CL_SUCCESS) fprintf(stderr,"Error: %s\n",clGetErrorString(err));
@@ -21,6 +23,20 @@ const char *saxpy =
 	"int index = get_global_id(0); \n"
 	"Y[index] = A*X[index] + Y[index]; \n"
 	"}                          \n";
+
+
+
+double cpuSecond() {
+   struct timeval tp;
+   gettimeofday(&tp,NULL);
+   return ((double)tp.tv_sec + (double)tp.tv_usec*1.e-6);
+}
+
+void SAXPY_CPU(float *x, float *y, const float a){
+	for(int i = 0; i < size; i++){
+		y[i] = a*x[i] + y[i];
+	}
+}
 
 
 int main(int argc, char *argv) {
@@ -46,10 +62,11 @@ int main(int argc, char *argv) {
 	// Create a command queue
 	cl_command_queue cmd_queue = clCreateCommandQueue(context, device_list[0], 0, &err);CHK_ERROR(err);
 
-	float *x, *y;
+	float *x, *y, *y_gpu;
 	x = (float *) malloc(sizeof(float) * size);
 	y = (float *) malloc(sizeof(float) * size);
-	int array_size = size*sizeof(float);
+	y_gpu = (float *) malloc(sizeof(float) * size);
+	int array_size = size * sizeof(float);
 
 	for(int i = 0; i < size; i++){
 		x[i] = rand() % 100;
@@ -81,17 +98,47 @@ int main(int argc, char *argv) {
 	err = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void*) &Y_dev); CHK_ERROR(err);
 	err = clSetKernelArg(kernel, 2, sizeof(float), (void*) &a); CHK_ERROR(err);
 	
-	size_t n_workitem = size;
 	size_t workgroup_size = 256;
+	size_t n_workitem = size + (workgroup_size - size % workgroup_size);
 
+	double gpu_starttime = cpuSecond();
 	err = clEnqueueNDRangeKernel(cmd_queue, kernel, 1, NULL, &n_workitem, &workgroup_size, 0, NULL, NULL);CHK_ERROR(err);
 	err = clFinish(cmd_queue);CHK_ERROR(err);
+	printf("GPU time: %f\n", cpuSecond() - gpu_starttime);
 
+	err = clEnqueueReadBuffer(cmd_queue, Y_dev, CL_TRUE, 0 , array_size, y_gpu, 0, NULL, NULL); CHK_ERROR(err);
+
+	double cpu_starttime = cpuSecond();
+	SAXPY_CPU(x, y, a);
+	printf("CPU time: %f\n", cpuSecond() - cpu_starttime);
+
+
+	int comp = 1;
+	for(int i = 0; i < size; i++){
+		if(abs(y[i] - y_gpu[i]) > EPSILON){
+			comp = 0;
+			printf("%f\n", abs(y[i] - y_gpu[i]));
+		}
+	}
+
+	printf("Comparing the output for each implementation...");
+	if(comp == 1)
+		printf("Correct\n");
+	else
+		printf("Incorrect\n");
+
+
+
+	
 	// Finally, release all that we have allocated.
 	err = clReleaseCommandQueue(cmd_queue);CHK_ERROR(err);
 	err = clReleaseContext(context);CHK_ERROR(err);
+	
 	free(platforms);
 	free(device_list);
+	free(y_gpu);
+	free(y);
+	free(x);
   
 	return 0;
 }
